@@ -1,0 +1,79 @@
+POST /bnw/produto/_search
+{
+    "aggs" : {
+        "contador_atributo.tipo": {
+            "value_count" : { "field" : "atributo.tipo" }
+        },
+        "contador_atributo.nome": {
+            "value_count" : { "field" : "atributo.nome" }
+        }
+    },
+    "from" : 0, "size" : 36,
+    "sort" : [
+        "_score",
+        "vendidos",
+        {
+            "_script" : { 
+                "script" : "(int)(Math.random()*4)",
+                "type" : "number",
+                "params" : {},
+                "order" : "desc"
+            }      
+        },
+        "marca"
+    ],
+  "query": {
+      "bool":  { 
+          "should": [
+                {
+                    "term" : { 
+                        "codigo_barra" : "9876"
+                    }                
+                }, 
+                {
+                    "term" : { 
+                        "cod" : "9876"
+                    }                
+                },                
+                {
+                    "multi_match": {
+                      "query": "9876",
+                      "fields": [
+                        "atributos.tipo^10",
+                        "conselho",
+                        "corpo_descricao",
+                        "descricao^2",
+                        "descricao_curta",
+                        "fundo_descricao",
+                        "marca^4",
+                        "nome^4",
+                        "nome_numeral",
+                        "nome_curto",
+                        "ocasiao_descricao",
+                        "resultado",
+                        "top_descricao"
+                      ],       		
+        		"boost" : 10.0
+                    }
+                },              
+                {                           
+                    "match": {                        
+                      "nome_fonetico": {
+                        "query": "9876",
+                        "fuzziness": 2
+                      }        
+                    }      
+                }
+            ],
+        "minimum_should_match" : 0,
+        "boost" : 1.0
+
+      }},
+  "filter" : {
+        "bool" : {
+            "must" : {
+                "term" : { "brinde" : "false" }
+            }
+        }
+    }
+}

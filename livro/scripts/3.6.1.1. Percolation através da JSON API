@@ -1,0 +1,13 @@
+PUT /volutarios/.percolator/1' -d '{
+    "query" : {
+        "match" : {
+            "message" : "bonsai tree"
+        }
+    }
+}
+
+GET /volutarios/message/_percolate' -d '{
+    "doc" : {
+        "message" : "A new bonsai tree in the office"
+    }
+}
